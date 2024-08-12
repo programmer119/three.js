@@ -1591,18 +1591,18 @@ var prettyPrint;
             // HTML5 recommends that a language be specified using "language-"
             // as the prefix instead.  Google Code Prettify supports both.
             // http://dev.w3.org/html5/spec-author-view/the-code-element.html
-            var langExtension = attrs['lang'];
-            if (!langExtension) {
-              langExtension = className.match(langExtensionRe);
-              // Support <pre class="prettyprint"><code class="language-c">
-              var wrapper;
-              if (!langExtension && (wrapper = childContentWrapper(cs))
-                  && codeRe.test(wrapper.tagName)) {
-                langExtension = wrapper.className.match(langExtensionRe);
-              }
+            // var langExtension = attrs['lang'];
+            // if (!langExtension) {
+            //   langExtension = className.match(langExtensionRe);
+            //   // Support <pre class="prettyprint"><code class="language-c">
+            //   var wrapper;
+            //   if (!langExtension && (wrapper = childContentWrapper(cs))
+            //       && codeRe.test(wrapper.tagName)) {
+            //     langExtension = wrapper.className.match(langExtensionRe);
+            //   }
 
-              if (langExtension) { langExtension = langExtension[1]; }
-            }
+            //   if (langExtension) { langExtension = langExtension[1]; }
+            // }
 
             var preformatted;
             if (preformattedTagNameRe.test(cs.tagName)) {

@@ -181,10 +181,9 @@
 
 					const object = intersects[ 0 ].object;
 					object.layers.toggle( BLOOM_SCENE );
+					console.log(object.name);
 					render();
-
 				}
-
 			}
 
 			window.onresize = function () {

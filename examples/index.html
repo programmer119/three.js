@@ -2,51 +2,24 @@
 <html lang="en">
 	<head>
 		<meta charset="utf-8">
-		<title>three.js examples</title>
-		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<!-- <title>three.js examples</title> -->
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=0.0, maximum-scale=0.0">
 		<link rel="shortcut icon" href="../files/favicon_white.ico" media="(prefers-color-scheme: dark)"/>
 		<link rel="shortcut icon" href="../files/favicon.ico" media="(prefers-color-scheme: light)" />
 		<link rel="stylesheet" type="text/css" href="../files/main.css">
 	</head>
 	<body>
 
-		<div id="panel">
-
-			<div id="header">
-				<h1><a href="https://threejs.org">three.js</a></h1>
-
-				<div id="sections">
-					<a href="../docs/index.html#manual/introduction/Creating-a-scene">docs</a>
-					<span class="selected">examples</span>
-				</div>
-
-				<div id="expandButton"></div>
-			</div>
-
-			<div id="panelScrim"></div>
-
-			<div id="contentWrapper">
-
-				<div id="inputWrapper">
-					<input placeholder="" type="text" id="filterInput" autocorrect="off" autocapitalize="off" spellcheck="false" />
-					<div id="clearSearchButton"></div>
-				</div>
-
-				<div id="content">
-					<img id="previewsToggler" src="./files/thumbnails.svg" width="20" height="20" />
-				</div>
-			</div>
-
-		</div>
+		
 
 		<iframe id="viewer" name="viewer" allow="fullscreen; xr-spatial-tracking;"></iframe>
 
-		<a id="button" target="_blank"><img src="../files/ic_code_black_24dp.svg"></a>
+		<!-- <a id="button" target="_blank"><img src="../files/ic_code_black_24dp.svg"></a> -->
 
 		<script>
 
 		const panel = document.getElementById( 'panel' );
-		const content = document.getElementById( 'content' );
+		// const content = document.getElementById( 'content' );
 		const viewer = document.getElementById( 'viewer' );
 		const filterInput = document.getElementById( 'filterInput' );
 		const clearSearchButton = document.getElementById( 'clearSearchButton' );
@@ -56,7 +29,7 @@
 		const previewsToggler = document.getElementById( 'previewsToggler' );
 
 		const sectionLink = document.querySelector( '#sections > a' );
-		const sectionDefaultHref = sectionLink.href;
+		// const sectionDefaultHref = sectionLink.href;
 
 		const links = {};
 		const validRedirects = new Map();
@@ -68,9 +41,9 @@
 
 		async function init() {
 
-			content.appendChild( container );
+			// content.appendChild( container );
 
-			viewSrcButton.style.display = 'none';
+			// viewSrcButton.style.display = 'none';
 
 			const files = await ( await fetch( 'files.json' ) ).json();
 			const tags = await ( await fetch( 'tags.json' ) ).json();
@@ -121,73 +94,59 @@
 
 			}
 
-			filterInput.value = extractQuery();
-
-			if ( filterInput.value !== '' ) {
-
-				panel.classList.add( 'searchFocused' );
-
-				updateFilter( files, tags );
-
-			} else {
-
-				updateLink( '' );
-
-			}
-
 			// Events
 
-			filterInput.onfocus = function ( ) {
+			// filterInput.onfocus = function ( ) {
 
-				panel.classList.add( 'searchFocused' );
+			// 	panel.classList.add( 'searchFocused' );
 
-			};
+			// };
 
-			filterInput.onblur = function ( ) {
+			// filterInput.onblur = function ( ) {
 
-				if ( filterInput.value === '' ) {
+			// 	if ( filterInput.value === '' ) {
 
-					panel.classList.remove( 'searchFocused' );
+			// 		panel.classList.remove( 'searchFocused' );
 
-				}
+			// 	}
 
-			};
+			// };
 
-			clearSearchButton.onclick = function ( ) {
+			// clearSearchButton.onclick = function ( ) {
 
-				filterInput.value = '';
-				updateFilter( files, tags );
-				filterInput.focus();
+			// 	filterInput.value = '';
+			// 	updateFilter( files, tags );
+			// 	filterInput.focus();
 
-			};
+			// };
 
-			filterInput.addEventListener( 'input', function () {
+			// filterInput.addEventListener( 'input', function () {
 
-				updateFilter( files, tags );
+			// 	updateFilter( files, tags );
 
-			} );
+			// } );
 
 
-			expandButton.addEventListener( 'click', function ( event ) {
+			// expandButton.addEventListener( 'click', function ( event ) {
 
-				event.preventDefault();
-				panel.classList.toggle( 'open' );
+			// 	event.preventDefault();
+			// 	panel.classList.toggle( 'open' );
 
-			} );
+			// } );
 
-			panelScrim.onclick = function ( event ) {
+			// panelScrim.onclick = function ( event ) {
 
-				event.preventDefault();
-				panel.classList.toggle( 'open' );
+			// 	event.preventDefault();
+			// 	panel.classList.toggle( 'open' );
 
-			};
+			// };
 
-			previewsToggler.onclick = function ( event ) {
+			// previewsToggler.onclick = function ( event ) {
 
-				event.preventDefault();
-				content.classList.toggle( 'minimal' );
+			// 	event.preventDefault();
+			// 	content.classList.toggle( 'minimal' );
 
-			};
+			// };
 
 			// iOS iframe auto-resize workaround
 
@@ -232,22 +191,22 @@
 
 		function selectFile( file ) {
 
-			if ( selected !== null ) links[ selected ].classList.remove( 'selected' );
+			// if ( selected !== null ) links[ selected ].classList.remove( 'selected' );
 
-			links[ file ].classList.add( 'selected' );
+			// links[ file ].classList.add( 'selected' );
 
-			window.location.hash = file;
-			viewer.focus();
-			viewer.style.display = 'unset';
+			// window.location.hash = file;
+			// viewer.focus();
+			// viewer.style.display = 'unset';
 
-			panel.classList.remove( 'open' );
+			// panel.classList.remove( 'open' );
 
-			selected = file;
+			// selected = file;
 
-			// Reveal "View source" button and set attributes to this example
-			viewSrcButton.style.display = '';
-			viewSrcButton.href = 'https://github.com/mrdoob/three.js/blob/master/examples/' + selected + '.html';
-			viewSrcButton.title = 'View source code for ' + getName( selected ) + ' on GitHub';
+			// // Reveal "View source" button and set attributes to this example
+			// viewSrcButton.style.display = '';
+			// viewSrcButton.href = 'https://github.com/mrdoob/three.js/blob/master/examples/' + selected + '.html';
+			// viewSrcButton.title = 'View source code for ' + getName( selected ) + ' on GitHub';
 
 		}
 
@@ -397,7 +356,7 @@
 		}
 
 		</script>
-		<template id="PlaceholderHTML">
+		<!-- <template id="PlaceholderHTML">
 			<!DOCTYPE html>
 				<html lang="en">
 					<head>
@@ -422,6 +381,6 @@
 						Select an example from the sidebar
 					</body>
 				</html>
-		</template>
+		</template> -->
 	</body>
 </html>

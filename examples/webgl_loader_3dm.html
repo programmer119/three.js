@@ -5,7 +5,7 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 		<link type="text/css" rel="stylesheet" href="main.css">
-		<style>
+		<!-- <style>
 			#loader {
 				border: 5px solid #f3f3f3; /* Light grey */
 				border-top: 5px solid #3d3d3d; /* Grey */
@@ -23,141 +23,1533 @@
 				0% { transform: rotate(0deg); }
 				100% { transform: rotate(360deg); }
 			}
-		</style>
+		</style> -->
 	</head>
 
 	<body>
-		<div id="info">
-			<a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> - Rhino 3DM loader
-		</div>
+		<!-- <div id="info">
+			<a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> - psh icosahedron
+		</div> -->
 
-		<div id="loader"></div>
-		<script type="importmap">
-			{
-				"imports": {
-					"three": "../build/three.module.js",
-					"three/addons/": "./jsm/"
-				}
+		<script id="vertexShaderback" type="x-shader/x-vertex">
+
+			varying vec2 vUv;
+
+			void main()	{
+
+
+
+
+				vUv = uv;
+		  
+				gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+
 			}
+
 		</script>
 
-		<script type="module">
+		<script id="fragmentShaderback" type="x-shader/x-fragment">
 
+			varying vec2 vUv;
+
+			uniform float time;
+
+			void main()	{
+
+				vec2 p = - 1.0 + 2.0 * vUv;
+				float a = time * 40.0;
+				float d, e, f, g = 1.0 / 40.0 ,h ,i ,r ,q;
+
+				e = 400.0 * ( p.x * 0.5 + 0.5 );
+				f = 400.0 * ( p.y * 0.5 + 0.5 );
+				i = 200.0 + sin( e * g + a / 150.0 ) * 20.0;
+				d = 200.0 + cos( f * g / 2.0 ) * 18.0 + cos( e * g ) * 7.0;
+				r = sqrt( pow( abs( i - e ), 2.0 ) + pow( abs( d - f ), 2.0 ) );
+				q = f / r;
+				e = ( r * cos( q ) ) - a / 2.0;
+				f = ( r * sin( q ) ) - a / 2.0;
+				d = sin( e * g ) * 176.0 + sin( e * g ) * 164.0 + r;
+				h = ( ( f + d ) + a / 2.0 ) * g;
+				i = cos( h + r * p.x / 1.3 ) * ( e + e + a ) + cos( q * g * 6.0 ) * ( r + h / 3.0 );
+				h = sin( f * g ) * 144.0 - sin( e * g ) * 212.0 * p.x;
+				h = ( h + ( f - e ) * q + sin( r - ( a + h ) / 7.0 ) * 10.0 + i / 4.0 ) * g;
+				i += cos( h * 2.3 * sin( a / 350.0 - q ) ) * 184.0 * sin( q - ( r * 4.3 + a / 12.0 ) * g ) + tan( r * g + h ) * 184.0 * cos( r * g + h );
+				i = mod( i / 5.6, 256.0 ) / 64.0;
+				if ( i < 0.0 ) i += 4.0;
+				if ( i >= 2.0 ) i = 4.0 - i;
+				d = r / 350.0;
+				d += sin( d * d * 8.0 ) * 0.52;
+				f = ( sin( a * g ) + 1.0 ) / 2.0;
+				gl_FragColor = vec4( vec3( f * i / 1.6, i / 2.0 + d / 13.0, i ) * d * p.x + vec3( i / 1.3 + d / 8.0, i / 2.0 + d / 18.0, i ) * d * ( 1.0 - p.x ), 1.0 ) * 0.3;
+
+			}
+
+		</script>
+
+		<!-- <div id="loader"></div> -->
+		<script type="x-shader/x-vertex" id="vertexshader">
+
+			varying vec2 vUv;
+		  
+			void main() {
+		  
+			  vUv = uv;
+		  
+			  gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+		  
+			}
+		  
+		  </script>
+		  
+		  <script type="x-shader/x-fragment" id="fragmentshader">
+		  
+			uniform sampler2D baseTexture;
+			uniform sampler2D bloomTexture;
+		  
+			varying vec2 vUv;
+		  
+			void main() {
+		  
+			  gl_FragColor = ( texture2D( baseTexture, vUv ) + vec4( 1.0 ) * texture2D( bloomTexture, vUv ) );
+		  
+			}
+		  
+		  </script>
+		  <script async src="https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js"></script>		  
+		  <script type="importmap">
+			
+			{
+			  "imports": {
+				
+				"three": "../build/three.module.js",
+				"three-spritetext": "//unpkg.com/three-spritetext/dist/three-spritetext.mjs",
+				"three/addons/": "./jsm/"				
+			  }
+			}
+		  </script>
+		  
+		  <script type="module">
+			// "three": "https://unpkg.com/three@0.143.0/build/three.module.js",
+		  	// 0.131.3
+			// 0.143.0
 			import * as THREE from 'three';
+			import { LineGeometry } from 'three/addons/lines/LineGeometry.js';
+			import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
+			import { Line2 } from 'three/addons/lines/Line2.js';
+			import * as GeometryUtils from 'three/addons/utils/GeometryUtils.js';		  
+			import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
+			import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+			import { SSRPass } from 'three/addons/postprocessing/SSRPass.js';			
+			import { ReflectorForSSRPass } from 'three/addons/objects/ReflectorForSSRPass.js';			
+			import { Flow } from 'three/addons/modifiers/CurveModifier.js';
+			import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';			
+			
+			// import { MeshLine } from 'https://github.com/spite/THREE.MeshLine.js';
+			import { Reflector } from 'three/addons/objects/Reflector.js';
+			import { OrbitControls } from 'https://unpkg.com/three@0.143.0/examples/jsm/controls/OrbitControls.js';
+			import { EffectComposer } from 'https://unpkg.com/three@0.143.0/examples/jsm/postprocessing/EffectComposer.js';
+			import { RenderPass } from 'https://unpkg.com/three@0.143.0/examples/jsm/postprocessing/RenderPass.js';
+			import { ShaderPass } from 'https://unpkg.com/three@0.143.0/examples/jsm/postprocessing/ShaderPass.js';
+			import { UnrealBloomPass } from 'https://unpkg.com/three@0.143.0/examples/jsm/postprocessing/UnrealBloomPass.js';
+			
+			import SpriteText from "three-spritetext";		  	
 
-			import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-			import { Rhino3dmLoader } from 'three/addons/loaders/3DMLoader.js';
+			let controls;
+			let raycaster;
+			let mouse;
+			let textureLoader;
+			let camera;
+			let scene;
+			let renderer;
+			let darkMaterial;
+			let materials = {};
+			let finalPass;
+			let finalComposer;
+			let bloomPass;
+			let bloomComposer;
+			let backuniforms;
+			let groundMirror;	
+			let flow;
+			let nodestatuschangetick = 0;
+			const nodestatuschangetickMax = 3;
+			let selects = [];
+			let geometry;
+			let groundReflector;
+			let bullets = [];
 
-			import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
+			const ENTIRE_SCENE = 0;
+			const BLOOM_SCENE = 1;
+			const globalposX = 0;
+			const globalposY = 0;
 
-			let camera, scene, renderer;
-			let controls, gui;
+			let container;
+			let clock;    
+			let startTime;
+			let bloomLayer;
+			const teaminfos = 			
+			[
+				// GROUP1
+				//0
+				{group:0, position:new THREE.Vector3(-20,15,0), file:'1', status:'LIVE', name:'SERVER1', info:'192.168.1.30', links:[
+					{linktype:'FRIEND', linkaction:'', linkindex:1, linklayer:0},
+					{linktype:'CHILD', linkaction:'', linkindex:7, linklayer:0, linkshape:'SMOOTH'},
+					{linktype:'CHILD', linkaction:'', linkindex:8, linklayer:0, linkshape:'SMOOTH'},
+					{linktype:'CHILD', linkaction:'', linkindex:9, linklayer:0, linkshape:'SMOOTH'},
+					{linktype:'CHILD', linkaction:'', linkindex:20, linklayer:0, linkshape:'SMOOTH'},
+				] },
+				//1 	
+				{group:0, position:new THREE.Vector3(-35,30,0), file:'2',status:'DEAD', name:'SERVER2', info:'192.168.1.30', links:[
+					{linktype:'FRIEND', linkaction:'', linkindex:2, linklayer:0}],}, 	
+				//2
+				{group:0, position:new THREE.Vector3(-20,50,0), file:'3',status:'DEAD', name:'SERVER3', info:'192.168.1.30', links:[
+					{linktype:'FRIEND', linkaction:'', linkindex:3, linklayer:0}, 
+					{linktype:'FRIEND', linkaction:'', linkindex:5, linklayer:0},			
+				] },
+				//3		
+				{group:0, position:new THREE.Vector3(20,50,0), file:'4',status:'LIVE', name:'SERVER4', info:'192.168.1.30', links:[
+					{linktype:'FRIEND', linkaction:'', linkindex:4, linklayer:0},
+					{linktype:'FRIEND', linkaction:'', linkindex:0, linklayer:0}
+				] },	
+				//4
+				{group:0, position:new THREE.Vector3(35,30,0), file:'1',status:'DEAD', name:'SERVER5', info:'192.168.1.30', links:[
+					{linktype:'FRIEND', linkaction:'', linkindex:5, linklayer:0}] },		
+				//5
+				{group:0, position:new THREE.Vector3(20,15,0), file:'2',status:'DEAD', name:'SERVER6', info:'192.168.1.30', links:[
+					{linktype:'CHILD', linkaction:'', linkindex:14, linklayer:0, linkshape:'SMOOTH'},
+					{linktype:'CHILD', linkaction:'', linkindex:17, linklayer:0, linkshape:'SMOOTH'},
+				] },
 
-			init();
 
-			function init() {
+				// GROUP2
+				//6
+				{group:1, position:new THREE.Vector3(-35,-15,0), file:'3',status:'LIVE', name:'SERVER7', info:'192.168.1.30', links:[					
+					{linktype:'CHILD', linkaction:'', linkindex:7, linklayer:0, linkshape:'SMOOTH1'},
+				] },
+				//7
+				{group:1, position:new THREE.Vector3(-30,-25,0), file:'4',status:'LIVE', name:'SERVER8', info:'192.168.1.30', links:[
+					{linktype:'CHILD', linkaction:'', linkindex:10, linklayer:0, linkshape:'SMOOTH'},
+					{linktype:'CHILD', linkaction:'', linkindex:11, linklayer:0, linkshape:'SMOOTH'},
+					{linktype:'CHILD', linkaction:'', linkindex:12, linklayer:0, linkshape:'SMOOTH'},
+				] },					
+				//8
+				{group:1, position:new THREE.Vector3(-25,-15,0), file:'1',status:'LIVE', name:'SERVER9', info:'192.168.1.30', links:[]},
+				//9
+				{group:1, position:new THREE.Vector3(-20,-15,0), file:'1',status:'DEAD', name:'SERVER10', info:'192.168.1.30', links:[]},
 
-				THREE.Object3D.DEFAULT_UP.set( 0, 0, 1 );
+				//10
+				{group:1, position:new THREE.Vector3(-35,-40,0), file:'3',status:'LIVE', name:'SERVER11', info:'192.168.1.30', links:[]},
+				//11
+				{group:1, position:new THREE.Vector3(-30,-40,0), file:'4',status:'LIVE', name:'SERVER12', info:'192.168.1.30', links:[]},
+				//12
+				{group:1, position:new THREE.Vector3(-25,-40,0), file:'1',status:'LIVE', name:'SERVER13', info:'192.168.1.30', links:[]},
 
-				renderer = new THREE.WebGLRenderer( { antialias: true } );
-				renderer.setPixelRatio( window.devicePixelRatio );
-				renderer.setSize( window.innerWidth, window.innerHeight );
-				renderer.setAnimationLoop( animate );
-				document.body.appendChild( renderer.domElement );
+				// GROUP3
 
-				camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 1000 );
-				camera.position.set( 26, - 40, 5 );
+				// GROUP4
+				//13
+				{group:2, position:new THREE.Vector3(10,-40,0), file:'3',status:'LIVE', name:'SERVER14', info:'192.168.1.30', links:[]},
+				//14
+				{group:2, position:new THREE.Vector3(15,-20,0), file:'4',status:'LIVE', name:'SERVER15', info:'192.168.1.30', links:[
+					{linktype:'CHILD', linkaction:'', linkindex:13, linklayer:0, linkshape:'SMOOTH'},
+					{linktype:'CHILD', linkaction:'', linkindex:15, linklayer:0, linkshape:'SMOOTH'},
+				]},
+				//15
+				{group:2, position:new THREE.Vector3(20,-40,0), file:'1',status:'LIVE', name:'SERVER16', info:'192.168.1.30', links:[]},				
 
-				scene = new THREE.Scene();
+				// GROUP5
+				//16
+				{position:new THREE.Vector3(30,-40,0), file:'3',status:'LIVE', name:'SERVER17', info:'192.168.1.30', links:[]},
+				//17
+				{group:2, position:new THREE.Vector3(35,-25,0), file:'4',status:'LIVE', name:'SERVER18', info:'192.168.1.30', links:[
+					{linktype:'CHILD', linkaction:'', linkindex:16, linklayer:0, linkshape:'SMOOTH'},
+					{linktype:'CHILD', linkaction:'', linkindex:18, linklayer:0, linkshape:'SMOOTH'},					
+					{linktype:'CHILD', linkaction:'', linkindex:19, linklayer:0, linkshape:'SMOOTH'},					
+				]},
+				//18
+				{group:2, position:new THREE.Vector3(35,-40,0), file:'1',status:'LIVE', name:'SERVER19', info:'192.168.1.30', links:[]},								
+				//19
+				{group:2, position:new THREE.Vector3(40,-40,0), file:'1',status:'LIVE', name:'SERVER20', info:'192.168.1.30', links:[]},
 
-				const directionalLight = new THREE.DirectionalLight( 0xffffff, 6 );
-				directionalLight.position.set( 0, 0, 2 );
-				scene.add( directionalLight );
+				// GROUP
+				//20
+				{position:new THREE.Vector3(-5,-10,0), file:'2',status:'LIVE', name:'SERVER21', info:'192.168.1.30', links:[
+					{linkaction:'', linkindex:21, linklayer:0,},
+				]},
+				//21
+				{position:new THREE.Vector3(-5,-20,0), file:'2',status:'LIVE', name:'SERVER22', info:'192.168.1.30', links:[
+					{linktype:'CHILD', linkaction:'', linkindex:22, linklayer:0, linkshape:'SMOOTH'},
+					{linktype:'CHILD', linkaction:'', linkindex:23, linklayer:0, linkshape:'SMOOTH'},
+					{linktype:'CHILD', linkaction:'', linkindex:24, linklayer:0, linkshape:'SMOOTH'},
+					{linktype:'CHILD', linkaction:'', linkindex:25, linklayer:0, linkshape:'SMOOTH'},
+				]},
+				//22
+				{position:new THREE.Vector3(-15,-40,0), file:'1',status:'LIVE', name:'SERVER23', info:'192.168.1.30', links:[]},								
+				//23
+				{position:new THREE.Vector3(-10,-40,0), file:'2',status:'LIVE', name:'SERVER24', info:'192.168.1.30', links:[]},												
+				//24
+				{position:new THREE.Vector3(0,-40,0), file:'1',status:'LIVE', name:'SERVER25', info:'192.168.1.30', links:[]},								
+				//25
+				{position:new THREE.Vector3(5,-40,0), file:'1',status:'LIVE', name:'SERVER26', info:'192.168.1.30', links:[]},								
+		  	]
+			
+			teaminfos.forEach(teaminfo=>{
+				teaminfo.position.x += globalposX;
+				teaminfo.position.y += globalposY;	
+			})
 
-				const loader = new Rhino3dmLoader();
-				//generally, use this for the Library Path: https://cdn.jsdelivr.net/npm/rhino3dm@8.0.1
-				loader.setLibraryPath( 'jsm/libs/rhino3dm/' );
-				loader.load( 'models/3dm/Rhino_Logo.3dm', function ( object ) {
+			const greenlinewidth = 1.2
+			const darkgreen = new THREE.Color(0.05, 0.15, 0.05);
+			// const middlegreen = new THREE.Color(0.15, 0.25, 0.15);
+			const lightgreen = new THREE.Color(0.3, 0.8, 0.3);
+			const lightblue = new THREE.Color(0.15, 0.15, 0.95);						
+			const lightred = new THREE.Color(0.95, 0.15, 0.15);
+			const lightwhite = new THREE.Color(1,1,1);
+			const backgroundcolor =new THREE.Color(0x010141);
+			const icondefaultblack = new THREE.Color(0xc4c4c4);
+			const darkskycolor = new THREE.Color(0x0101A7);
 
-					scene.add( object );
-					initGUI( object.userData.layers );
+			
+			const groupboxcolor = new THREE.Color(0x222244); // 0x55CC33//			
+			const groupboxcolorSelect = new THREE.Color(0x6666AA); // 0x55CC33//
 
-					// hide spinner
-					document.getElementById( 'loader' ).style.display = 'none';
+			const grouplinecolor = new THREE.Color(0x555599); // 0x55CC33//
+			const grouplinecolorSelect = new THREE.Color(0x9999EE); // 0x55CC33//			
+			const grouplinewidth = 2.5;
+			
+			// const container = document.getElementById( 'container' );
+			clock = new THREE.Clock();			
+			//let planes = [];
+			startTime = Date.now();
+			const color = new THREE.Color();
+			color.setHSL( 0.5, 0.8, 0.8 );
+			
+			bloomLayer = new THREE.Layers();
+			bloomLayer.set( BLOOM_SCENE );
+		  
+			const params = {
+			  exposure: 1,
+			  bloomStrength: 1,
+			  bloomThreshold: 0.3,
+			  bloomRadius: 0.1,
+			  scene: 'Scene with Glow'
+			};
+		  
+			darkMaterial = new THREE.MeshBasicMaterial( { color: 'black' } );
+			materials = {};
+		  
+			renderer = new THREE.WebGLRenderer( { 
+				alpha: true,
+				antialias: true 
+			} );
+			renderer.setPixelRatio( window.devicePixelRatio );
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			renderer.toneMapping = THREE.ReinhardToneMapping;
+		  
+			document.body.appendChild( renderer.domElement );
 
-				}, function ( progress ) {
+			scene = new THREE.Scene();
+			scene.background = new THREE.Color( backgroundcolor );
+			// const textureLoader = new THREE.TextureLoader();
+			// const texture = textureLoader.load(
+			// "space.jpg"
+			// );
+			
+			// scene.background = texture;			
+			// texture.needsUpdate = true;
+			// scene.needsUpdate = true;
+			
+			textureLoader = new THREE.TextureLoader();
+			camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 1000 );
+			camera.position.set( 10, -60, 35 );
+			camera.lookAt( 10, -30, 0 );
+		  
+			// controls = new OrbitControls( camera, renderer.domElement );
+			// controls.maxPolarAngle = Math.PI * 2;
+			// controls.minDistance = 1;
+			// controls.maxDistance = 1000;
+			// controls.addEventListener( 'change', render );
+		  
+			scene.add( new THREE.AmbientLight( 0x404040 ) );
 
-					console.log( ( progress.loaded / progress.total * 100 ) + '%' );
+			const mainLight = new THREE.PointLight( 0xe7e7e7, 2.5, 250, 0 );
+				mainLight.position.set ( 0, 0, 0 );
+				scene.add( mainLight );			
+		  
+			const renderScene = new RenderPass( scene, camera );
+		  
+			bloomPass = new UnrealBloomPass( new THREE.Vector2( window.innerWidth, window.innerHeight ), 1.5, 0.4, 0.85 );
+			bloomPass.threshold = params.bloomThreshold;
+			bloomPass.strength = params.bloomStrength;
+			bloomPass.radius = params.bloomRadius;
+					  
+			bloomComposer = new EffectComposer( renderer );
+			bloomComposer.renderToScreen = false;
+			bloomComposer.addPass( renderScene );
+			bloomComposer.addPass( bloomPass );
 
-				}, function ( error ) {
+			raycaster = new THREE.Raycaster();
+			mouse = new THREE.Vector2();
+			window.addEventListener( 'pointerdown', onPointerDown );
+		  
+			finalPass = new ShaderPass(
+			  new THREE.ShaderMaterial( {
+				uniforms: {
+				  baseTexture: { value: null },
+				  bloomTexture: { value: bloomComposer.renderTarget2.texture }
+				},
+				vertexShader: document.getElementById( 'vertexshader' ).textContent,
+				fragmentShader: document.getElementById( 'fragmentshader' ).textContent,
+				defines: {}
+			  } ), 'baseTexture'
+			);
+			finalPass.needsSwap = true;
+		  
+			finalComposer = new EffectComposer( renderer );
+			finalComposer.addPass( renderScene );
+			finalComposer.addPass( finalPass );
+		  
+			setupScene();
+			renderer.setAnimationLoop( animate );
+			window.onresize = function () {
+		  
+			  const width = window.innerWidth;
+			  const height = window.innerHeight;
+		  
+			  camera.aspect = width / height;
+			  camera.updateProjectionMatrix();
+		  
+			  renderer.setSize( width, height );
+			  bloomComposer.setSize( width, height );
+			  finalComposer.setSize( width, height );
+			//   composer2.setSize(width, height);
+		  
+			  //groundReflector.getRenderTarget().setSize( window.innerWidth, window.innerHeight );
+			//   groundReflector.resolution.set( window.innerWidth, window.innerHeight );
 
-					console.log( error );
+			  render();
+		  
+			};
 
+			// ATTACK, HIT FX
+			function createFXobjects(parent, planeGeometry, icontexture)
+			{
+				let effectobjects = [];
+				function createPlane(parent){					
+					const planeMaterial =  new THREE.MeshBasicMaterial( { 
+						side: THREE.BackSide,
+						map:icontexture,transparent: true, 
+						opacity:1.0, 
+						color:0xFFFFFF, 
+						blending: THREE.AdditiveBlending, // 블렌딩 모드 변경
+						depthWrite: false, // 깊이 버퍼에 쓰기 비활성화
+						// depthTest: false // 깊이 테스트 비활성화											
+					} );//new THREE.MeshBasicMaterial({color: 0xffffff, transparent: true, opacity: 1.0, side: THREE.BackSide, map:texture, });
+					planeMaterial.reflectivity = 0; //refractionRatio;
+					const plane = new THREE.Mesh( planeGeometry, planeMaterial );					
+					plane.scale.set(1, 1, 1);
+					plane.rotateOnAxis(new THREE.Vector3(0,0,1), Math.PI);
+					plane.rotateOnAxis(new THREE.Vector3(1,0,0), Math.PI*0.5);
+					plane.position.z = 4+4;
+					plane.position.y = -5;
+					plane.scale.setScalar( 10.0 );
+					plane.visible = false;
+					plane.renderOrder = 5;
+					plane.name = 'iconfx';
+					parent.add(plane);
+					return plane;
+				}					
+
+				for(let i = 0; i < 4; ++i)
+				{
+					effectobjects.push(createPlane(parent));
+				}
+				return effectobjects;
+			}
+
+			function useFX(fxtype, element)
+			{				
+				// 재활용 검색
+				let effect = element.effects.find(effect=>!effect.visible);				
+
+				// 재활용 없으면 먼저 발사한것 가져와서 재활용통에 넣는다
+				if(!effect)
+				{
+					effect = element.effects.reduce(function(accum, cur){return accum.material.opacity > cur.material.opacity ? cur : accum});
+					returnFX(effect);
+				}
+
+				// 재활용통에서 가져와서 셋팅
+				effect.visible = true;
+				effect.name = fxtype;
+				if(fxtype === 'ATTACK')
+				{
+					effect.material.color = new THREE.Color(lightblue);
+				}
+				else
+					effect.material.color = new THREE.Color(lightred);
+			}
+
+			function returnFX(effect)
+			{				
+				effect.visible = false;
+				effect.material.opacity = 1.0;
+				effect.scale.setScalar( 10.0 );
+				//effect.rotation.z = 0;
+				effect.name = "";
+				effect.position.y = 0;
+			}
+
+			function animateFX(deltatime)
+			{
+				for(let i = 0; i < teaminfos.length; ++i)
+				{
+					const teaminfo = teaminfos[i];
+					
+					for(let j = 0; j < teaminfo.effects.length; ++j)
+					{
+						let effect = teaminfo.effects[j];
+						if(!effect.visible)
+							continue;
+						
+						if(effect.material.opacity <= 0)
+						{
+							returnFX(effect);
+						}
+
+						const direction = effect.name === "ATTACK" ? 1 : -1;
+						const opacitySpd = deltatime * 1.0;
+						const scaleSpd = deltatime * 6 * direction;
+						const posSpd = deltatime * 0.3 * direction;
+						//const rotSpd = effect.name === "ATTACK" ? 0 : deltatime * 0.3;
+						effect.material.opacity -= opacitySpd;
+						effect.scale.setScalar( effect.scale.x + scaleSpd );
+						//effect.position.y -= posSpd;
+						effect.position.y = -3;
+						//effect.rotateOnAxis(new THREE.Vector3(0,0,1), rotSpd);
+					}
+					
+				}
+			}
+
+			// BULLET
+			function readybullets()
+			{
+				for(let i = 0; i < 20; ++i)
+				{
+					pushbullet();
+				}
+			}			
+			
+			function pushbullet()
+			{
+				const bulletstruct = {divisions:null,currentdividx:-1,object:createbulletObject()};
+				bullets.push(bulletstruct);
+				return bulletstruct;
+			}
+
+			
+			function usebullet(divisions, self, dest)
+			{
+				let bulletstruct = bullets.find(bullet => !bullet.divisions);				
+				if(!bulletstruct)
+				{
+					bulletstruct = pushbullet();
+				}
+
+				bulletstruct.divisions = divisions;
+				bulletstruct.currentdividx = 0;
+				bulletstruct.object.visible = true;
+				bulletstruct.object.position.add(divisions[0]);
+				bulletstruct.object.scale.setScalar(0.09);
+				bulletstruct.self = self;
+				bulletstruct.dest = dest;
+
+				useFX('ATTACK', self);
+			}	
+			
+			function findbullets(self,dest)
+			{
+				let fbullets = bullets.filter(bullet=>bullet.self === self && bullet.dest === dest);
+				return fbullets;
+			}
+
+			function returnbullet(bullet, hittarget)
+			{
+				if(hittarget)
+					useFX('HIT', bullet.dest);									
+				bullet.divisions = null;
+				bullet.currentdividx = -1;
+				bullet.object.visible = false;
+				bullet.object.position.set(0,0,0);
+				bullet.object.scale.setScalar(0.09);				
+				bullet.self = null;
+				bullet.dest = null;				
+			}
+			
+			function createbulletObject()
+			{
+				const geometry = new THREE.IcosahedronGeometry( 1.0, 0 );				
+				const material = new THREE.MeshBasicMaterial( { color: new THREE.Color() } );
+				const bullet = new THREE.Mesh( geometry, material );
+				bullet.position.set (0,0,0);
+				bullet.scale.setScalar(0.09);
+				scene.add( bullet );
+				bullet.layers.enable( BLOOM_SCENE );
+				bullet.visible = false;
+				return bullet;
+
+
+				// const material = new THREE.MeshBasicMaterial( { color: color } );
+				// const sphere = new THREE.Mesh( geometry, material );
+				// sphere.position.set (teaminfos[i].position.x, teaminfos[i].position.y, teaminfos[i].position.z);
+				// sphere.scale.setScalar( 0.1 );
+				// scene.add( sphere );
+				// sphere.layers.enable( BLOOM_SCENE );
+			
+			}
+			function animatebullets(deltatime)
+			{
+				bullets.forEach(bullet=>{
+					if(bullet.divisions)
+					{					
+						const sourpos = bullet.divisions[bullet.currentdividx];
+						const destpos = bullet.divisions[bullet.currentdividx+1];
+						const currpos = bullet.object.position;
+						// const remaindist = destpos.clone.add(-currpos);
+						const remaindist = destpos.clone().add(currpos.clone().multiplyScalar(-1))
+						const dir = remaindist.clone().normalize();
+						//const sum = bullet.divisions.reduce(function(accum,cur){accum+=cur;return accum;})
+						let sum = 5;
+						// for(let i = 0; i < bullet.divisions.length; ++i)
+						// {
+						// 	if(i >= bullet.divisions.length-1)
+						// 		break;
+
+						// 	sum += bullet.divisions[i].distanceTo(bullet.divisions[i+1]);
+						// }
+
+						const movespeed = 2.5 * sum;
+						let movedist = dir.clone().multiplyScalar(movespeed * deltatime);
+						if(movedist.lengthSq()>=remaindist.lengthSq())
+						{
+							movedist = remaindist;
+							++bullet.currentdividx;
+							if(bullet.currentdividx >= bullet.divisions.length-1)
+							{
+								returnbullet(bullet, true);
+							}								
+						}
+
+						bullet.object.position.add(movedist);
+
+						//let scaledirection = 1;
+						if(bullet.object.scale.x < 0.1)
+							bullet.scaledirection = 1;
+						else if(bullet.object.scale.x > 0.5)
+							bullet.scaledirection = -1
+
+						bullet.object.scale.setScalar(bullet.object.scale.x + deltatime * bullet.scaledirection);
+						
+					}
+					
+					// if(bullet.self)
+					// {
+					// 	const attacklink = bullet.self.links.find(link=>link.linkaction.includes('ATTACK'));						
+					// 	returnbullet(bullet, false);
+					// }
+				})
+			}
+
+			function initbackground()
+			{
+				let bgTexture = textureLoader.load("neon/bg.jpg",
+				function ( texture ) {
+					var img = texture.image;
+					// bgWidth= img.width;
+					// bgHeight = img.height;
+					// resize();
 				} );
-
-				controls = new OrbitControls( camera, renderer.domElement );
-
-				window.addEventListener( 'resize', resize );
-
+				scene.background = bgTexture;
+				bgTexture.wrapS = THREE.MirroredRepeatWrapping;
+				bgTexture.wrapT = THREE.MirroredRepeatWrapping;				
 			}
 
-			function resize() {
+			function initmirror(mattop)
+			{
+				const planeGeo = new THREE.PlaneGeometry( 1000.1, 1000.1 );
 
-				const width = window.innerWidth;
-				const height = window.innerHeight;
+				// function createPlane(){
+				// 	const texturename = 'bg';
+				// 	const texture = textureLoader.load(
+				// 		`neon/${texturename}.jpg`
+				// 	);
+				// 	const planeGeometry = new THREE.PlaneGeometry( 1000, 1000 );
+				// 	const planeMaterial =  new THREE.MeshBasicMaterial( { shadowSide:THREE.DoubleSide, side: THREE.DoubleSide,map:texture, transparent: true, } );//new THREE.MeshBasicMaterial({color: 0xffffff, transparent: true, opacity: 1.0, side: THREE.BackSide, map:texture, });
+				// 	const plane = new THREE.Mesh( planeGeometry, planeMaterial );
+				// 	plane.castShadow = true;
+				// 	plane.receiveShadow = true;
+				// 	 plane.rotateOnAxis(new THREE.Vector3(0,0,1), Math.PI);
+				// 	// plane.rotateOnAxis(new THREE.Vector3(1,0,0), Math.PI*0.5);
+				// 	plane.position.z = 150;
+				// 	scene.add(plane);					
+				// }		
+				// createPlane();
 
-				camera.aspect = width / height;
-				camera.updateProjectionMatrix();
+				// const mesh = new THREE.Mesh( geometry, material );
 
-				renderer.setSize( width, height );
+				
+				// const testGeo = new THREE.PlaneGeometry( 2.0, 2.0 );
+				// const planeTest = new THREE.Mesh( planeGeo, mattop );
+				// mattop.side = THREE.DoubleSide;
+				// scene.add( planeTest );
+				// const mesh = new THREE.Mesh( geometry, material );
+				// scene.add( mesh );			
 
+				// PLANE1 SHADER
+				// mattop.side = THREE.BackSide;
+				// const geometry1 = new THREE.PlaneGeometry( 1000, 1000 );
+				// const mesh = new THREE.Mesh( geometry1, mattop );
+				// mesh.position.z = 50;
+				// mesh.rotateX( Math.PI / 100 );
+				// scene.add( mesh );				
+				
+				// PLANE2 
+				const planeTop = new THREE.Mesh( planeGeo, new THREE.MeshPhongMaterial( { side: THREE.BackSide, color: darkskycolor, transparent: true, opacity:0.4 } ) );				
+				planeTop.position.z = 30;
+				planeTop.rotateX( Math.PI / 100 );
+				planeTop.scale.setScalar(1);
+				scene.add( planeTop );
+
+				// PLANE3
+				// const planeGeo3 = new THREE.PlaneGeometry( 1000.1, 1000.1 );
+				// const texturematrix = textureLoader.load(					
+				// 	`neon/matrix.gif`
+				// );
+				// const matrixMaterial =  new THREE.MeshBasicMaterial( { side: THREE.BackSide,map:texturematrix,transparent: true, opacity:0.1, color:icondefaultblack } );
+				// const mesh1 = new THREE.Mesh( planeGeo3, matrixMaterial );
+				// mesh1.position.z = 30;
+				// // mesh1.rotateX( Math.PI / 100 );
+				// scene.add( mesh1 );
+				
+
+				// reflectors/mirrors
+
+				let geometry, material;
+
+				// var planeMat = new THREE.MeshLambertMaterial({
+				// 	color: 0xffffff, // dark blue
+				// 	transparent: true,
+				// 	opacity: 0.5,
+				// 	reflectivity: 1
+				// }); 
+
+				//geometry = new THREE.CircleGeometry( 400, 640 );
+				groundMirror = new Reflector( planeGeo, {
+					clipBias: 0.003,
+					textureWidth: window.innerWidth * window.devicePixelRatio / 1,
+					textureHeight: window.innerHeight * window.devicePixelRatio / 1,
+					color: 0xffffff,
+					// transparent: true,
+					// opacity:0.5
+
+					// intensity:0.1,
+					// mixBlur:0,
+					// mixStrength:0,
+					// multisample:0.2,
+					// reflectivity:0.1,
+					// color: 0x050505,
+				} );
+				//groundMirror.material = planeMat;
+				// groundMirror.material.transparent= true;
+				// groundMirror.material.opacity= 0.0;
+				// groundMirror.material.reflectivity = 0;
+				// groundMirror.material.mixBlur = 0;
+				// groundMirror.material.mixStrength = 0;
+				//groundMirror.material.reflectivity = 0.1;
+				
+
+
+				// groundMirror.transparent = true;
+				// groundMirror.opacity = 0.0;
+				// groundMirror.reflectivity = 0.0;
+				// groundMirror.mixBlur = 0;
+				// groundMirror.mixStrength = 0;
+				
+				// transparent: true,
+				// 	opacity: 0.5,
+				groundMirror.position.z = -1.5;
+				// groundMirror.visible = false;
+				groundMirror.rotateZ( Math.PI );
+				scene.add( groundMirror );				
 			}
+			
+			// const geometry3 = new THREE.IcosahedronGeometry( 1.0, 0 );				
+			// const material = new THREE.MeshBasicMaterial( { color: lightblue } );
+			// const sphere = new THREE.Mesh( geometry3, material );
+			// sphere.position.set (0,0,0);
+			// sphere.scale.setScalar( 0.5 );
+			// scene.add( sphere );
+			// sphere.layers.enable( BLOOM_SCENE );
 
 			function animate() {
+				const deltatime = clock.getDelta();
+				const currentTime = Date.now();
+				const time = ( currentTime - startTime ) / 1000;
+				
+				// console.log(size);
+				const rotSpeed = 0.1;
+				teaminfos.forEach(object => {					
 
-				controls.update();
-				renderer.render( scene, camera );
+					const attacklink = object.links.find(link=>link.linkaction.includes('ATTACK'));
+					// for(let j = 0; j < self.links.length; ++j)
+					// {
+					// 	const linkindex = self.links[j].linkindex;
+					// 	const linkaction = self.links[j].linkaction;
+					// }
 
+
+					const size = (attacklink ? 11 : 9) *(Math.cos( time*5 ) * 0.020 + 0.980);
+					//const size = 10 *(Math.cos( time*5 ) * 0.020 + 0.980);
+					let rotdirection = Math.floor((Math.random() * 2)) * 2 - 1; // -1 , 1
+					let plane = object.plane;
+					if(plane.rotation.y > 0.1)
+						rotdirection = -1;
+					if(plane.rotation.y < -0.1)
+						rotdirection = +1;
+
+					plane.rotation.y += deltatime * rotdirection * rotSpeed;
+					plane.scale.setScalar( size );	
+
+					//console.log(deltatime * rotdirection * rotSpeed);
+				});
+
+				if(backuniforms)
+					backuniforms[ 'time' ].value = performance.now() / 1000;
+				animatenode(deltatime);
+				animatebullets(deltatime);
+				animateFX(deltatime);
+				bloomPass.strength = (Math.cos( time*5 ) * 0.3 + 1.5);
+				// console.log(bloomPass.strength);
+				// flow.moveAlongCurve( 0.001 );
+				render();
+			}			
+			
+			function createPlane(parent, planeGeometry, icontexture){
+				const planeMaterial =  new THREE.MeshBasicMaterial( { 
+					
+					side: THREE.BackSide,					
+					transparent: true, 
+					color:icondefaultblack,					
+					depthWrite: false, // 깊이 버퍼에 쓰기 비활성화					
+					// depthTest: false // 깊이 테스트 비활성화					
+					map:icontexture,
+				 } );//new THREE.MeshBasicMaterial({color: 0xffffff, transparent: true, opacity: 1.0, side: THREE.BackSide, map:texture, });
+				const plane = new THREE.Mesh( planeGeometry, planeMaterial );
+				plane.scale.set(1, 1, 1);
+				plane.rotateOnAxis(new THREE.Vector3(0,0,1), Math.PI);
+				plane.rotateOnAxis(new THREE.Vector3(1,0,0), Math.PI*0.5);
+				plane.position.z = 4+4;
+				plane.renderOrder = 4;
+				plane.name = 'icon';
+				plane.scale.setScalar( 10.0 );				
+				// planes.push(plane);
+				parent.add(plane);
+				// planeMaterial.toneMapped = true;
+				//planeMaterial.emissive = '0xffffff'
+				// planeMaterial.emissiveIntensity = 0;
+				// planeMaterial.needsUpdate = true;
+				return plane;
+				// planeMaterial.color = lightred;
+			}			
+		  
+			function setupScene() {
+		  	
+				const geometry = new THREE.IcosahedronGeometry( 1.0, 0 );
+				const geometry_hud = new THREE.IcosahedronGeometry( 0.0, 0 );
+				for(let i = 0; i < teaminfos.length; ++i)
+				{	
+					const material = new THREE.MeshBasicMaterial( { color: color, transparent: true, opacity: 0.0 } );
+					const sphere = new THREE.Mesh( geometry, material );
+					sphere.position.set (teaminfos[i].position.x, teaminfos[i].position.y, teaminfos[i].position.z);
+					sphere.scale.setScalar( 0.1 );
+
+					// console.log(teaminfos[i].position);
+					
+					
+					// sphere.position.set( new THREE.Vector3(10,0,0) );
+					// sphere.position.set = new THREE.Vector3(10,0,0) ;
+					// sphere.position.normalize().multiplyScalar( Math.random() * 4.0 + 2.0 );
+					//sphere.scale.setScalar( Math.random() * Math.random() + 0.5 );
+					scene.add( sphere );
+
+					//if(teaminfos[i].status==="LIVE")
+					sphere.layers.enable( BLOOM_SCENE );
+
+					const InitHud=(color, txt, addpos)=>{
+						const material_hud = new THREE.MeshPhongMaterial( { 
+							side: THREE.FrontSide,					
+							transparent: true, 
+							// color:icondefaultblack,					
+							// depthWrite: false, // 깊이 버퍼에 쓰기 비활성화					
+							// depthTest: false // 깊이 테스트 비활성화										
+
+							// color: 0x00ff00,
+							// transparent: true,
+							// opacity: 1.0,
+							// blending: THREE.AdditiveBlending, // 블렌딩 모드 변경
+							// depthWrite: false, // 깊이 버퍼에 쓰기 비활성화
+							// depthTest: false // 깊이 테스트 비활성화
+						} );
+						const huddummy = new THREE.Mesh( geometry_hud, material_hud );						
+						// huddummy.material.side = THREE.DoubleSide;
+						// huddummy.material.depthWrite = false;
+						huddummy.castShadow = false;
+						huddummy.renderOrder = 10;
+						// material.alphaTest = 0.0;
+						
+						scene.add( huddummy );
+
+						huddummy.position.set (teaminfos[i].position.x, teaminfos[i].position.y+addpos, teaminfos[i].position.z);
+						const tooltiptext = new SpriteText(txt, 0.7);
+						tooltiptext.color = color;
+						huddummy.add(tooltiptext);
+
+						// if(color === 'green' )
+						// {
+						// 	tooltiptext.padding = [6, 2];
+						// }
+						// tooltiptext.position.z = -2;
+						return tooltiptext;
+					}
+					
+					const planeGeometry = new THREE.PlaneGeometry( 4, 4 );
+					const icontexture = textureLoader.load(
+						`neon/${teaminfos[i].file}.png`
+					);					
+					teaminfos[i].plane = createPlane(sphere, planeGeometry, icontexture);
+					teaminfos[i].effects = createFXobjects(sphere, planeGeometry, icontexture);
+					teaminfos[i].hudName = InitHud('gray', teaminfos[i].name, -2);
+					teaminfos[i].hudinfo = InitHud('green', teaminfos[i].info, -3.5);					
+				}
+		  
+				// initfloor();
+				initline();
+				// initbackground();
+				 initmirror(initshaderback());
+				readybullets();
+
+				let group = -1;
+				
+				const groupboxGeometry = new THREE.PlaneGeometry( 1,1 );						
+				teaminfos.forEach(teaminfo=>{
+					const groupboxMaterial =  new THREE.MeshBasicMaterial( { 
+						color:groupboxcolor,
+						side: THREE.FrontSide, 
+						transparent: true, 
+						opacity:0.5, 					
+						//blending: THREE.Multiply, // 블렌딩 모드 변경
+						// depthWrite: false, // 깊이 버퍼에 쓰기 비활성화
+						// depthTest: false // 깊이 테스트 비활성화			
+
+						// color:0xFFFFFF, 
+						// side: THREE.BackSide,
+						// map:icontexture,transparent: true, 
+						// opacity:1.0, 
+						
+						// blending: THREE.AdditiveBlending, // 블렌딩 모드 변경
+						// depthWrite: false, // 깊이 버퍼에 쓰기 비활성화
+						// depthTest: false // 깊이 테스트 비활성화																
+					} );				
+					
+					const grouplineMaterial = new LineMaterial({
+						color: grouplinecolor,
+						linewidth: grouplinewidth, // in world units with size attenuation, pixels otherwise
+						vertexColors: true,
+						dashed: false,
+						alphaToCoverage: true,
+						transparent: true,
+					});							
+					function createGroupPlane(rect, group)
+					{	
+						// BOX
+						const groupbox = new THREE.Mesh( groupboxGeometry, groupboxMaterial );			
+						groupbox.castShadow = false;
+						groupbox.receiveShadow = false;								
+						groupbox.position.x = rect.x;
+						groupbox.position.y = rect.y;
+						groupbox.position.z = -1.45;;
+						groupbox.scale.set( rect.width, rect.height, 1 );						
+						groupbox.visible = true;
+						groupbox.name = `groupbox ${group}`;
+						groupbox.renderOrder = 3;
+						scene.add(groupbox);
+						
+						// OUTLINE
+						let point = [];
+						let positions = [];
+						let colors = [];
+						const color = grouplineMaterial.color; //new THREE.Color();
+						let divisions = [
+							new THREE.Vector3(groupbox.position.x-rect.width*0.5, groupbox.position.y-rect.height*0.5, groupbox.position.z),
+							new THREE.Vector3(groupbox.position.x+rect.width*0.5, groupbox.position.y-rect.height*0.5, groupbox.position.z),
+							new THREE.Vector3(groupbox.position.x+rect.width*0.5, groupbox.position.y+rect.height*0.5, groupbox.position.z),
+							new THREE.Vector3(groupbox.position.x-rect.width*0.5, groupbox.position.y+rect.height*0.5, groupbox.position.z),
+							new THREE.Vector3(groupbox.position.x-rect.width*0.5, groupbox.position.y-rect.height*0.5, groupbox.position.z),
+						]
+						for ( let i = 0; i < divisions.length; i ++ ) {
+
+							const t = i;
+							point = divisions[ i ];
+							positions.push( point.x, point.y, point.z );							
+							colors.push( color.r, color.g, color.b );
+						}
+
+						const grouplineGeometry = new LineGeometry();
+						grouplineGeometry.setPositions( positions );
+						grouplineGeometry.setColors( colors );						
+						const line1 = new Line2( grouplineGeometry, grouplineMaterial );
+						line1.computeLineDistances();
+						line1.scale.set( 1, 1, 1 );
+						scene.add( line1 );						
+					}
+
+					//if(teaminfo.group === 1 && group != teaminfo.group)
+					if(teaminfo.group !=-1 && group != teaminfo.group)
+					{
+						group = teaminfo.group;
+						const teamgroups = teaminfos.filter(team=>team.group === group);
+						let rect = {l:10000,t:-10000,r:-10000,b:10000};
+						teamgroups.forEach(teamp=>{
+							if(teamp.position.x < rect.l)
+							{
+								rect.l = teamp.position.x;
+							}						
+							else if(teamp.position.x > rect.r)
+							{
+								rect.r = teamp.position.x;
+							}						
+							
+							if(teamp.position.y < rect.b)
+							{
+								rect.b = teamp.position.y;
+							}						
+							else if(teamp.position.y > rect.t)
+							{
+								rect.t = teamp.position.y;
+							}						
+						})
+						let addlengthX = 4;
+						let addlengthY = 12;
+						rect.width = rect.r - rect.l + addlengthX;
+						rect.height = rect.t - rect.b + addlengthY;
+						rect.x = rect.l + (rect.width-addlengthX)*0.5;//(rect.r - rect.l);
+						rect.y = rect.t - (rect.height-addlengthY)*0.5;
+
+						//let fbullets = bullets.filter(bullet=>bullet.self === self && bullet.dest === dest);
+						createGroupPlane(rect, group)
+					}
+				})				
+				
+				InitHelper();
+
+				// initbullet
+				// const material = new THREE.MeshStandardMaterial( {
+				// 	color: 0x99ffff
+				// } );
+				// const objectToCurve = new THREE.Mesh( geometry, material );
+
+				// flow = new Flow( objectToCurve );
+				// flow.updateCurve( 0, curve );
+				// scene.add( flow.object3D );
+				//////////////
+
+
+				scene.rotateOnAxis(new THREE.Vector3(0,0,1), 0.3)
+				render();
+				renderer.clearDepth();
+			}
+		  
+			function InitHelper()
+			{
+				const axesHelper = new THREE.AxesHelper(10);
+				scene.add(axesHelper);
 			}
 
-			function initGUI( layers ) {
+			function disposeMaterial( obj ) {
+		  
+			  if ( obj.material ) {
+		  
+				obj.material.dispose();
+		  
+			  }
+		  
+			}
+		  
+			function render() {
+			  renderer.render( scene, camera );
+			  renderBloom();
+			//   composer1.render();
+			//   composer2.render();
+			  finalComposer.render();			  
+			//   renderer.setPixelRatio(window.devicePixelRatio * 2.5);
+			}
+		  
+			function renderBloom( mask ) {
+		  
+				//scene.traverse( darkenNonBloomed );
+				// plane.visible = false;
+				bloomComposer.render();
+				scene.traverse( restoreMaterial );
+				// plane.visible = true;
+		  
+			}
+		  
+			function darkenNonBloomed( obj ) {
+			  
+			  if ( obj.isMesh && bloomLayer.test( obj.layers ) === false ) {
+		  
+				materials[ obj.uuid ] = obj.material;
+				obj.material = darkMaterial;		  
+			  }		  
+			}
+		  
+			function restoreMaterial( obj ) {
+			  
+			  if ( materials[ obj.uuid ] ) {
+		  
+				obj.material = materials[ obj.uuid ];
+				delete materials[ obj.uuid ];
+		  
+			  }
+		  
+			}
 
-				gui = new GUI( { title: 'layers' } );
+			function spacebackground() {
+				var stars = new Array(0);
+				for ( var i = 0; i < 1000; i ++ ) {
+					let x = THREE.Math.randFloatSpread( 500 );
+					let y = THREE.Math.randFloatSpread( 500 );
+					let z = THREE.Math.randFloatSpread( 500 );
+					stars.push(x, y, z);
+				}
+				var starsGeometry = new THREE.BufferGeometry();
+				starsGeometry.setAttribute(
+					"position", new THREE.Float32BufferAttribute(stars, 3)
+				);
+				var starsMaterial = new THREE.PointsMaterial( { color: 0x888888 } );
+				var starField = new THREE.Points( starsGeometry, starsMaterial );				
+				starField.scale.setScalar( Math.random() * Math.random() *0.1 );
+				scene.add( starField );
+			}
 
-				for ( let i = 0; i < layers.length; i ++ ) {
+			function initfloor()
+			{
+				geometry = new THREE.PlaneGeometry( 1, 1 );
+				groundReflector = new ReflectorForSSRPass( geometry, {
+					clipBias: 0.0003,
+					textureWidth: window.innerWidth,
+					textureHeight: window.innerHeight,
+					color: 0x888888,
+					useDepthTexture: true,
+				} );
+				groundReflector.material.depthWrite = false;
+				// groundReflector.rotation.x = - Math.PI / 2;
+				groundReflector.renderOrder = 1;
+				groundReflector.visible = true;
+				scene.add( groundReflector );
+			}
 
-					const layer = layers[ i ];
-					gui.add( layer, 'visible' ).name( layer.name ).onChange( function ( val ) {
+			function initline() {
+				for(let i = 0; i < teaminfos.length; ++i)
+				{	
+					const self = teaminfos[i];
+					if(!self.links || self.links.length <= 0)
+						continue;
 
-						const name = this.object.name;
+					for(let j = 0; j < self.links.length; ++j)
+					{
+						const positions = [];
+						const colors = [];									
+						const linkindex = self.links[j].linkindex;
+						const linkaction = self.links[j].linkaction;
+						const linkshape = self.links[j].linkshape;
+						const linklayer = self.links[j].linklayer;
+						const zpos = self.links[j].linklayer === 0 ? -0.5 : 0.5;
 
-						scene.traverse( function ( child ) {
+						const dest = teaminfos[linkindex];
+						if(linkindex === -1)
+							continue;
 
-							if ( child.userData.hasOwnProperty( 'attributes' ) ) {
+						const division1 = new THREE.Vector3(self.position.x, self.position.y, zpos);
+						const division2 = new THREE.Vector3(dest.position.x, dest.position.y, zpos);
+						let divisions = [
+							division1,
+							division2,
+						];
 
-								if ( 'layerIndex' in child.userData.attributes ) {
+						if(linkshape)
+						{
+							const toUp = self.position.y > dest.position.y ? -1 : 1;
+							const toRight = self.position.x > dest.position.x ? -1 : 1;
 
-									const layerName = layers[ child.userData.attributes.layerIndex ].name;
+							const width = Math.abs(Math.abs(self.position.x) - Math.abs(dest.position.x))
 
-									if ( layerName === name ) {
+							//const minmax = self.links.reduce(function(accum,cur){cur. accum.min});
+							const childlinks = self.links.filter(link=>link.linktype === 'CHILD');
+							let sum = 0;
+							childlinks.forEach(childlink=>{
+								sum+=teaminfos[childlink.linkindex].position.y;
+							})
+							const avr = sum / childlinks.length;
+							const height = Math.abs((self.position.y) - (avr))
 
-										child.visible = val;
-										layer.visible = val;
+							if(linkshape === 'SMOOTH')
+							{								
+								const division1 = new THREE.Vector3(self.position.x, self.position.y, zpos);
+								const division2 = new THREE.Vector3(self.position.x, self.position.y+toUp*(height/2), zpos);														
+								const division3 = new THREE.Vector3(dest.position.x, self.position.y+toUp*(height/2), zpos);							
+								const division4 = new THREE.Vector3(dest.position.x, dest.position.y, zpos);							
 
-									}
-
-								}
-
+								divisions = [
+									division1,
+									division2,
+									division3,
+									division4,
+								];						
 							}
+							else if(linkshape === 'SMOOTH1')
+							{								
+								const division1 = new THREE.Vector3(self.position.x, self.position.y, zpos);
+								const division2 = new THREE.Vector3(self.position.x, dest.position.y, zpos);											
+								const division3 = new THREE.Vector3(dest.position.x, dest.position.y, zpos);							
+
+								divisions = [
+									division1,
+									division2,
+									division3,
+									// division5,
+									// division6,
+								];						
+							}
+						}
+
+						let point = new THREE.Vector3();
+						const color = darkgreen; //new THREE.Color();
+
+						for ( let i = 0; i < divisions.length; i ++ ) {
+
+							const t = i;
+							point = divisions[ i ];
+							positions.push( point.x, point.y, point.z );							
+							colors.push( color.r, color.g, color.b );
+						}
+
+						const geometry = new LineGeometry();
+						geometry.setPositions( positions );
+						geometry.setColors( colors );
+						const matLine = new LineMaterial( {
+
+							color: 0xffffff,
+							linewidth: greenlinewidth, // in world units with size attenuation, pixels otherwise
+							vertexColors: true,
+
+							dashed: false,
+							alphaToCoverage: true,
+							transparent: true,
 
 						} );
 
-					} );
+						const line1 = new Line2( geometry, matLine );
+						line1.computeLineDistances();
+						line1.scale.set( 1, 1, 1 );
+						scene.add( line1 );
 
+						self.links[j].divisions = divisions;
+						self.links[j].line 		= line1;
+						self.links[j].geometry	= geometry;
+					}
+				}	
+			}
+
+			function animatenode(deltatime) {
+				nodestatuschangetick += deltatime;
+				if(nodestatuschangetick > nodestatuschangetickMax)
+				{				
+					let linknums = [
+						Math.floor((Math.random() * teaminfos.length)), 
+						Math.floor((Math.random() * teaminfos.length)),
+						Math.floor((Math.random() * teaminfos.length))
+					];
+					
+					linknums = new Set(linknums);
+					linknums = [...linknums];
+
+					// linknums = [7];
+					// if(linknums[0] == linknums[1])
+					// 	linknums.pop();
+
+					for(let i = 0; i < teaminfos.length; ++i)
+					{
+						const self = teaminfos[i];
+						self.plane.material.color = icondefaultblack;
+						self.hudName.color = 'gray';
+						self.hudinfo.color = 'green';
+					}
+
+					for(let i = 0; i < teaminfos.length; ++i)
+					{
+						const self = teaminfos[i];	
+						function changeNodeStatus()
+						{
+							let attackj = Math.floor(Math.random() * self.links.length) ;
+							for(let j = 0; j < self.links.length; ++j)
+							{
+								const linkindex = self.links[j].linkindex;
+								const linkaction = self.links[j].linkaction;
+								const linkshape = self.links[j].linkshape;
+								// const linklayer = self.links[j].linklayer;
+								// const zpos = self.links[j].linklayer === 0 ? -0.5 : 0.5;
+
+								const dest = teaminfos[linkindex];
+								if(linkindex === -1)
+									continue;
+
+								function changelinecolor(color, linewidth, opacity)
+								{
+									const geometry = self.links[j].geometry;
+									const divisions = self.links[j].divisions;
+									const line = self.links[j].line;
+
+									let colors = [];
+									for ( let i = 0; i < divisions.length; i ++ ) {										
+										colors.push( color.r, color.g, color.b );
+									}
+									geometry.setColors( colors );
+									line.material.linewidth = linewidth;
+									// line.material.opacity = opacity;
+									// line.material.uniforms.opacity.value = opacity;
+								}
+
+								// function changeplanecolor(linkaction)
+								// {
+								// 	const geometry = self.plane;
+								// 	// const divisions = self.links[j].divisions;
+								// 	// const line = self.links[j].line;
+
+								// 	// let colors = [];
+								// 	// for ( let i = 0; i < divisions.length; i ++ ) {										
+								// 	// 	colors.push( color.r, color.g, color.b );
+								// 	// }
+
+								// 	if(linkaction.includes('ATTACK'))
+								// 	{
+								// 		self.plane.material.color = new THREE.Color(lightblue);
+								// 		dest.plane.material.color = new THREE.Color(lightred);
+								// 	}
+								// 	else
+								// 	{
+								// 		self.plane.material.color = new THREE.Color(lightwhite);
+								// 		dest.plane.material.color = new THREE.Color(lightwhite);
+								// 	}
+
+								// 	// line.material.linewidth = linewidth;
+								// 	// line.material.opacity = opacity;
+								// 	// line.material.uniforms.opacity.value = opacity;
+								// }								
+
+								const isattackj = attackj === j;
+								if( (i === linknums[0] || i === linknums[1] || i === linknums[2]) && isattackj)
+								{		
+									self.links[j].linkaction = 'ATTACK1';							
+									changelinecolor(lightred, 3.5, 1.0);
+									//changeplanecolor(self.links[j].linkaction);									
+									
+									self.hudName.color = 'white';
+									self.hudinfo.color = 'lightgreen';
+									dest.hudName.color = 'white';
+									dest.hudinfo.color = 'lightgreen';									
+									self.plane.material.color = lightwhite;
+									dest.plane.material.color = lightwhite;													
+									usebullet(self.links[j].divisions, self, dest);
+									const interval = setInterval(() => {
+										usebullet(self.links[j].divisions, self, dest);
+									}, 1000);
+
+									setTimeout(() => {
+										clearInterval(interval);
+									}, (nodestatuschangetickMax-1)*1000);
+								}
+								else
+								{
+									self.links[j].linkaction = '';
+									changelinecolor(darkgreen, greenlinewidth, 0.5);									
+
+									//self.plane.material.color = icondefaultblack;
+									// dest.plane.material.color = icondefaultblack;
+									let fbullets = findbullets(self,dest);
+									if(fbullets)
+									{
+										fbullets.forEach(fbullet=>{
+											returnbullet(fbullet, false);
+										})
+										
+									}									
+									//changeplanecolor(self.links[j].linkaction);
+								}
+								// const linknum = Math.floor((Math.random() * 7));
+								// switch(linknum)
+								// {
+								// 	case 0:
+								// 		self.links[j].linkaction = 'ATTACK1';
+								// 		console.log('ATTACK1!');										
+								// 		changelinecolor(lightred);
+
+								// 		break;
+								// 	case 1:
+								// 	case 2:
+								// 	case 3:
+								// 	case 4:
+								// 	case 5:
+								// 	case 6:
+								// 		self.links[j].linkaction = 'FRIEND';
+								// 		changelinecolor(lightgreen);
+								// 		break;
+								// 	default:
+								// 		console.error(`linknum ${linknum} range over`);
+								// }
+							}
+						}
+
+						nodestatuschangetick = 0;
+						if(self.links || self.links.length > 0)														
+						{
+							changeNodeStatus();
+						}
+					}
+				}
+			}
+
+
+		function rgbToHsl(r, g, b) {
+			r /= 255, g /= 255, b /= 255;
+
+			var max = Math.max(r, g, b), min = Math.min(r, g, b);
+			var h, s, l = (max + min) / 2;
+
+			if (max == min) {
+				h = s = 0; // achromatic
+			} else {
+				var d = max - min;
+				s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+
+				switch (max) {
+				case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+				case g: h = (b - r) / d + 2; break;
+				case b: h = (r - g) / d + 4; break;
 				}
 
+				h /= 6;
 			}
-		</script>
+
+			return [ h, s, l ];
+			}
+
+			/**
+			 * Converts an HSL color value to RGB. Conversion formula
+			 * adapted from http://en.wikipedia.org/wiki/HSL_color_space.
+			 * Assumes h, s, and l are contained in the set [0, 1] and
+			 * returns r, g, and b in the set [0, 255].
+			 *
+			 * @param   Number  h       The hue
+			 * @param   Number  s       The saturation
+			 * @param   Number  l       The lightness
+			 * @return  Array           The RGB representation
+			 */
+			function hslToRgb(h, s, l) {
+				var r, g, b;
+
+				if (s == 0) {
+					r = g = b = l; // achromatic
+				} else {
+					function hue2rgb(p, q, t) {
+					if (t < 0) t += 1;
+					if (t > 1) t -= 1;
+					if (t < 1/6) return p + (q - p) * 6 * t;
+					if (t < 1/2) return q;
+					if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+					return p;
+					}
+
+					var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+					var p = 2 * l - q;
+
+					r = hue2rgb(p, q, h + 1/3);
+					g = hue2rgb(p, q, h);
+					b = hue2rgb(p, q, h - 1/3);
+				}
+
+				return [ r * 255, g * 255, b * 255 ];
+			}
+			
+			function initshaderback()
+			{
+				const geometry = new THREE.PlaneGeometry( 2, 2 );
+
+				backuniforms = {
+					time: { value: 1.0 }
+				};
+
+				const material = new THREE.ShaderMaterial( {
+
+					uniforms: backuniforms,
+					vertexShader: document.getElementById( 'vertexShaderback' ).textContent,
+					fragmentShader: document.getElementById( 'fragmentShaderback' ).textContent
+
+				} );
+
+				// const mesh = new THREE.Mesh( geometry, material );
+				// scene.add( mesh );				
+
+				return material;
+
+			}
+
+			function onPointerDown( event ) {
+				mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+				mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+
+				raycaster.setFromCamera( mouse, camera );
+				const intersects = raycaster.intersectObjects( scene.children, false );
+				if ( intersects.length > 0 ) {
+					let groupintersect = intersects.find(intersect=>intersect.object.name.includes('groupbox'));
+					
+					if(groupintersect)
+					{
+						let groubobject = groupintersect.object;
+						console.log(`${groubobject.name} ${groubobject.type}`);
+						
+						if(!groubobject.isSelected)
+						{
+							groubobject.material.color = groupboxcolorSelect;						
+						}
+						else
+							groubobject.material.color = groupboxcolor;
+
+						groubobject.layers.toggle( BLOOM_SCENE );
+						groubobject.isSelected = !groubobject.isSelected;
+
+						// const groupboxcolor = 0x223322; // 0x55CC33//
+						// const grouplinecolor = 0x448844; // 0x55CC33//
+						// const groupboxcolorSelect = 0x228822; // 0x55CC33//
+						// const grouplinecolorSelect = 0x44DD44; // 0x55CC33//			
+						render();
+					}
+				}
+			}			
+
+
+		  </script>
+		  
 
 	</body>
 </html>

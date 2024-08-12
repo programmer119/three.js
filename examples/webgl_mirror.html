@@ -83,22 +83,22 @@
 					clipBias: 0.003,
 					textureWidth: window.innerWidth * window.devicePixelRatio,
 					textureHeight: window.innerHeight * window.devicePixelRatio,
-					color: 0xb5b5b5
+					color: 0xffffff
 				} );
 				groundMirror.position.y = 0.5;
 				groundMirror.rotateX( - Math.PI / 2 );
 				scene.add( groundMirror );
 
-				geometry = new THREE.PlaneGeometry( 100, 100 );
-				verticalMirror = new Reflector( geometry, {
-					clipBias: 0.003,
-					textureWidth: window.innerWidth * window.devicePixelRatio,
-					textureHeight: window.innerHeight * window.devicePixelRatio,
-					color: 0xc1cbcb
-				} );
-				verticalMirror.position.y = 50;
-				verticalMirror.position.z = - 50;
-				scene.add( verticalMirror );
+				// geometry = new THREE.PlaneGeometry( 100, 100 );
+				// verticalMirror = new Reflector( geometry, {
+				// 	clipBias: 0.003,
+				// 	textureWidth: window.innerWidth * window.devicePixelRatio,
+				// 	textureHeight: window.innerHeight * window.devicePixelRatio,
+				// 	color: 0xc1cbcb
+				// } );
+				// verticalMirror.position.y = 50;
+				// verticalMirror.position.z = - 50;
+				// scene.add( verticalMirror );
 
 
 				sphereGroup = new THREE.Object3D();
@@ -128,46 +128,47 @@
 				const planeTop = new THREE.Mesh( planeGeo, new THREE.MeshPhongMaterial( { color: 0xffffff } ) );
 				planeTop.position.y = 100;
 				planeTop.rotateX( Math.PI / 2 );
+				planeTop.scale.setScalar(10);
 				scene.add( planeTop );
 
-				const planeBottom = new THREE.Mesh( planeGeo, new THREE.MeshPhongMaterial( { color: 0xffffff } ) );
-				planeBottom.rotateX( - Math.PI / 2 );
-				scene.add( planeBottom );
+				// const planeBottom = new THREE.Mesh( planeGeo, new THREE.MeshPhongMaterial( { color: 0xffffff } ) );
+				// planeBottom.rotateX( - Math.PI / 2 );
+				// scene.add( planeBottom );
 
-				const planeFront = new THREE.Mesh( planeGeo, new THREE.MeshPhongMaterial( { color: 0x7f7fff } ) );
-				planeFront.position.z = 50;
-				planeFront.position.y = 50;
-				planeFront.rotateY( Math.PI );
-				scene.add( planeFront );
+				// const planeFront = new THREE.Mesh( planeGeo, new THREE.MeshPhongMaterial( { color: 0x7f7fff } ) );
+				// planeFront.position.z = 50;
+				// planeFront.position.y = 50;
+				// planeFront.rotateY( Math.PI );
+				// scene.add( planeFront );
 
-				const planeRight = new THREE.Mesh( planeGeo, new THREE.MeshPhongMaterial( { color: 0x00ff00 } ) );
-				planeRight.position.x = 50;
-				planeRight.position.y = 50;
-				planeRight.rotateY( - Math.PI / 2 );
-				scene.add( planeRight );
+				// const planeRight = new THREE.Mesh( planeGeo, new THREE.MeshPhongMaterial( { color: 0x00ff00 } ) );
+				// planeRight.position.x = 50;
+				// planeRight.position.y = 50;
+				// planeRight.rotateY( - Math.PI / 2 );
+				// scene.add( planeRight );
 
-				const planeLeft = new THREE.Mesh( planeGeo, new THREE.MeshPhongMaterial( { color: 0xff0000 } ) );
-				planeLeft.position.x = - 50;
-				planeLeft.position.y = 50;
-				planeLeft.rotateY( Math.PI / 2 );
-				scene.add( planeLeft );
+				// const planeLeft = new THREE.Mesh( planeGeo, new THREE.MeshPhongMaterial( { color: 0xff0000 } ) );
+				// planeLeft.position.x = - 50;
+				// planeLeft.position.y = 50;
+				// planeLeft.rotateY( Math.PI / 2 );
+				// scene.add( planeLeft );
 
 				// lights
 				const mainLight = new THREE.PointLight( 0xe7e7e7, 2.5, 250, 0 );
-				mainLight.position.y = 60;
+				mainLight.position.y = 0;
 				scene.add( mainLight );
 
-				const greenLight = new THREE.PointLight( 0x00ff00, 0.5, 1000, 0 );
-				greenLight.position.set( 550, 50, 0 );
-				scene.add( greenLight );
+				// const greenLight = new THREE.PointLight( 0x00ff00, 0.5, 1000, 0 );
+				// greenLight.position.set( 550, 50, 0 );
+				// scene.add( greenLight );
 
-				const redLight = new THREE.PointLight( 0xff0000, 0.5, 1000, 0 );
-				redLight.position.set( - 550, 50, 0 );
-				scene.add( redLight );
+				// const redLight = new THREE.PointLight( 0xff0000, 0.5, 1000, 0 );
+				// redLight.position.set( - 550, 50, 0 );
+				// scene.add( redLight );
 
-				const blueLight = new THREE.PointLight( 0xbbbbfe, 0.5, 1000, 0 );
-				blueLight.position.set( 0, 50, 550 );
-				scene.add( blueLight );
+				// const blueLight = new THREE.PointLight( 0xbbbbfe, 0.5, 1000, 0 );
+				// blueLight.position.set( 0, 50, 550 );
+				// scene.add( blueLight );
 
 				window.addEventListener( 'resize', onWindowResize );
 

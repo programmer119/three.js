@@ -280,12 +280,7 @@ h1 a {
 			outline: none;
 		}
 
-	#contentWrapper {
-		flex: 1;
-		overflow: hidden;
-		display: flex;
-		flex-direction: column;
-	}
+
 
 	#panel #content {
 		flex: 1;
@@ -394,9 +389,6 @@ iframe#viewer {
 	display: none; /* Workaround: The iframe has white background in Chrome for some reason */
 }
 
-#viewer {
-	padding-left: var(--panel-width);
-}
 
 #button {
 	position: fixed;
@@ -598,24 +590,7 @@ iframe#viewer {
 		background-color: rgba(0,0,0,0.4);
 	}
 
-	#contentWrapper {
-		position: absolute;
-		right: 0;
-		top: 0;
-		bottom: 0;
-		background: var(--background-color);
-		box-shadow: 0 0 8px rgba(0,0,0,.1);
-		width: calc(100vw - 60px);
-		max-width: 360px;
-		z-index: 10000;
-		transition: .25s transform;
-		overflow-x: hidden;
-		margin-right: -380px;
-		line-height: 2rem;
-	}
-	#panel.open #contentWrapper {
-		transform: translate3d(-380px, 0 ,0);
-	}
+	
 	#viewer,
 	iframe {
 		left: 0;
